@@ -7,10 +7,13 @@ in
 pkgs.stdenv.mkDerivation rec {
   name = "openclonk-${version}";
 
+  gitRef = pkgs.lib.commitIdFromGitRepo ./.git;
+
   src = builtins.filterSource (path: type: ! builtins.elem (baseNameOf path) [
     ".git" # leave out .git as it changes often in ways that do not affect the build
     "default.nix" # default.nix might change, but the only thing that matters is what it evaluates to, and nix takes care of that
     "result" # build result is irrelevant
+    "build"
   ]) ./.;
 
   enableParallelBuilding = true;
@@ -18,6 +21,15 @@ pkgs.stdenv.mkDerivation rec {
   buildInputs = with pkgs; [
     cmake SDL2 SDL2_mixer libjpeg libpng freetype glew tinyxml
   ] ++ stdenv.lib.optional withEditor qt5.full;
+
+  preConfigure = ''
+    sed s/REVGOESHERE/''${gitRef:0:12}/ > cmake/GitGetChangesetID.cmake <<EOF
+    function(git_get_changeset_id VAR)
+      set(''${VAR} "REVGOESHERE" PARENT_SCOPE)
+    endfunction()
+    EOF
+    cat cmake/GitGetCh*
+  '';
 
   postInstall = ''
     mkdir -p $out/bin
