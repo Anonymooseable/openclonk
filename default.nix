@@ -18,6 +18,8 @@ pkgs.stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
+  hardeningDisable = "format";
+
   buildInputs = with pkgs; [
     cmake SDL2 SDL2_mixer libjpeg libpng freetype glew tinyxml
   ] ++ stdenv.lib.optional withEditor qt5.full;
@@ -25,10 +27,9 @@ pkgs.stdenv.mkDerivation rec {
   preConfigure = ''
     sed s/REVGOESHERE/''${gitRef:0:12}/ > cmake/GitGetChangesetID.cmake <<EOF
     function(git_get_changeset_id VAR)
-      set(''${VAR} "REVGOESHERE" PARENT_SCOPE)
+      set(\''${VAR} "REVGOESHERE" PARENT_SCOPE)
     endfunction()
     EOF
-    cat cmake/GitGetCh*
   '';
 
   postInstall = ''
