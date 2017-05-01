@@ -42,7 +42,7 @@ pkgs.stdenv.mkDerivation rec {
     description = "A free multiplayer action game about mining, settling and fast-paced melees";
     homepage = "http://www.openclonk.org/";
     license = with licenses; [
-      isc cc-by-sa-40
+      isc cc-by-30
     ];
     maintainers = with lib.maintainers; [ lheckemann ];
   };
