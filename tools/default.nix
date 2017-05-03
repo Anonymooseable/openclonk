@@ -5,7 +5,7 @@ let
   version = let
       inherit (builtins) match head readFile;
       inherit (pkgs.lib) removePrefix removeSuffix;
-      versionCmake = readFile ./Version.txt;
+      versionCmake = readFile ../Version.txt;
       getValue = name: let
           matchResult = match ''.*SET\(${name}\s+([0-9]*|.*)\).*'' versionCmake;
         in if matchResult == null
@@ -20,14 +20,14 @@ in
 pkgs.stdenv.mkDerivation rec {
   name = "openclonk-${version}";
 
-  gitRef = pkgs.lib.commitIdFromGitRepo ./.git;
+  gitRef = pkgs.lib.commitIdFromGitRepo ../.git;
 
   src = builtins.filterSource (path: type: ! builtins.elem (baseNameOf path) [
     ".git" # leave out .git as it changes often in ways that do not affect the build
     "default.nix" # default.nix might change, but the only thing that matters is what it evaluates to, and nix takes care of that
     "result" # build result is irrelevant
     "build"
-  ]) ./.;
+  ]) ./..;
 
   enableParallelBuilding = true;
 
