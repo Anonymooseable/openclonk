@@ -33,9 +33,14 @@ pkgs.stdenv.mkDerivation rec {
 
   hardeningDisable = "format";
 
+  nativeBuildInputs = with pkgs; [ cmake ];
+
   buildInputs = with pkgs; [
-    cmake SDL2 SDL2_mixer libjpeg libpng freetype glew tinyxml
+    SDL2 openal freealut libvorbis libogg libjpeg libpng freetype glew tinyxml
+    pkgconfig
   ] ++ stdenv.lib.optional withEditor qt5.full;
+
+  cmakeFlags = [ "-DAudio_TK=OpenAL" ];
 
   preConfigure = ''
     sed s/REVGOESHERE/''${gitRef:0:12}/ > cmake/GitGetChangesetID.cmake <<EOF
