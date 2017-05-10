@@ -19,8 +19,8 @@ pkgs.stdenv.mkDerivation rec {
   nativeBuildInputs = with pkgs; [ cmake ];
 
   buildInputs = with pkgs; [
-    SDL2 openal freealut libvorbis libogg libjpeg libpng freetype glew tinyxml
-    pkgconfig
+    SDL2 libvorbis libogg libjpeg libpng freetype glew tinyxml
+    openal freealut pkgconfig
   ] ++ stdenv.lib.optional withEditor qt5.full;
 
   cmakeFlags = [ "-DAudio_TK=OpenAL" ];
