@@ -1,24 +1,7 @@
 { pkgs ? import <nixpkgs> {} , withEditor ? false }:
 
-let
-  # Beautiful hacks. Don't look.
-  version = let
-      inherit (builtins) match head readFile;
-      inherit (pkgs.lib) removePrefix removeSuffix;
-      versionCmake = readFile ../Version.txt;
-      getValue = name: let
-          matchResult = match ''.*SET\(${name}\s+([0-9]*|.*)\).*'' versionCmake;
-        in if matchResult == null
-        then throw "Could not find version"
-        else removePrefix "\"" (removeSuffix "\"" (head matchResult));
-      major = getValue "C4XVER1";
-      minor = getValue "C4XVER2";
-      extra = getValue "C4VERSIONEXTRA";
-    in "${major}.${minor}-${extra}";
-
-in
 pkgs.stdenv.mkDerivation rec {
-  name = "openclonk-${version}";
+  name = "openclonk";
 
   gitRef = pkgs.lib.commitIdFromGitRepo ../.git;
 
