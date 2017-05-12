@@ -18,6 +18,8 @@ pkgs.stdenv.mkDerivation rec {
 
   nativeBuildInputs = with pkgs; [ cmake ];
 
+  dontStrip = true;
+
   buildInputs = with pkgs; [
     SDL2 libvorbis libogg libjpeg libpng freetype glew tinyxml
     openal freealut pkgconfig
@@ -31,6 +33,19 @@ pkgs.stdenv.mkDerivation rec {
       set(\''${VAR} "REVGOESHERE" PARENT_SCOPE)
     endfunction()
     EOF
+  '';
+
+  # Temporary measure until 28154f45a6 is in a release of nixpkgs
+  # Once this is the case, replace this with cmakeBuildType = "RelWithDebInfo"
+  configurePhase = ''
+    runHook preConfigure
+    fixCmakeFiles .
+    mkdir build
+    cd build
+    cmakeDir=..
+    cmakeFlagsArray+=("-DCMAKE_INSTALL_PREFIX=$prefix" "-DCMAKE_BUILD_TYPE=RelWithDebInfo" "-DCMAKE_SKIP_BUILD_RPATH=ON")
+    cmake ''${cmakeDir:-.} $cmakeFlags "''${cmakeFlagsArray[@]}"
+    runHook postConfigure
   '';
 
   postInstall = ''
